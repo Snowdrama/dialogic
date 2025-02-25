@@ -48,9 +48,18 @@ func _apply_layer_adjustments() -> void:
 	var coverage := _find_largest_coverage_rect()
 	var offset_fix := Vector2()
 	if fix_offset and get_child_count():
-		offset_fix = -get_child(0).position
-		if "centered" in get_child(0) and get_child(0).centered:
-			offset_fix += get_child(0).get_rect().size/2.0
+		#get all sprites
+		var sprite_list = _find_sprites_recursively(self)
+		# make sure we have some sprites
+		if len(sprite_list) > 0:
+			# add each possible offset
+			for child_sprite:Sprite2D in sprite_list:
+				if "centered" in child_sprite and child_sprite.centered:
+					offset_fix += child_sprite.get_rect().size/2.0
+				else:
+					offset_fix += child_sprite.get_rect().position
+			#finally average the offset 
+			offset_fix = offset_fix/len(sprite_list)
 
 	for node: Node in get_children():
 		var node_position: Vector2 = node.position
